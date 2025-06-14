@@ -105,3 +105,42 @@ document.querySelectorAll('.call-to-action').forEach(button => {
 }document.addEventListener('DOMContentLoaded', () => {
   // NEW LOGIC HERE
 });
+document.querySelectorAll('.call-to-action').forEach(button => {
+  button.addEventListener('click', () => {
+    const card = button.closest('.pricing-card');
+    const plan = card.querySelector('input[type="checkbox"]').dataset.plan;
+
+    const planBase = pricingPlans[plan];
+    const selectedAddOns = [];
+    let totalUpfront = planBase.upfront;
+    let totalMonthly = planBase.monthly;
+
+    Object.entries(addOns[plan]).forEach(([className, cost]) => {
+      const checkbox = card.querySelector(`.${className}`);
+      if (checkbox && checkbox.checked) {
+        totalUpfront += cost.upfront;
+        totalMonthly += cost.monthly;
+        selectedAddOns.push(`${className.replace('-', ' ')}: +$${cost.upfront}/$${cost.monthly}`);
+      }
+    });
+
+    const modal = document.createElement('div');
+    modal.classList.add('pricing-modal');
+    modal.innerHTML = `
+      <div class="pricing-modal-content">
+        <h2>Confirm Your Plan</h2>
+        <p><strong>Plan:</strong> ${plan.charAt(0).toUpperCase() + plan.slice(1)}</p>
+        <p><strong>Add-ons:</strong><br>${selectedAddOns.join('<br>') || 'None'}</p>
+        <p><strong>Total:</strong> $${totalUpfront} upfront / $${totalMonthly} monthly</p>
+        <button class="confirm-plan">Continue to Checkout</button>
+        <button class="cancel-plan">Cancel</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    modal.querySelector('.cancel-plan').onclick = () => modal.remove();
+    modal.querySelector('.confirm-plan').onclick = () => {
+      window.location.href = "/checkout-page";
+    };
+  });
+});
