@@ -1,3 +1,4 @@
+alert("Script loaded");
 document.addEventListener('DOMContentLoaded', () => {
   const pricingPlans = {
     starter: { upfront: 3499, monthly: 35 },
